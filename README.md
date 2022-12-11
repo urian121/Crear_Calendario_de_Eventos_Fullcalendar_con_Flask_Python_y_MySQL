@@ -14,7 +14,7 @@ virtualenv -p python3 env o python3 -m venv env
 pip install mysql-connector-python
 
 
-<h1 align="center"> Crear/Actualizar el fichero requirements.txt:</h1>
+<em> Crear/Actualizar el fichero requirements.txt:</em>
 pip freeze > requirements.txt
 
 <em> IMPORTANTE, para correr el proyecto solo debes ejecutar el archivo

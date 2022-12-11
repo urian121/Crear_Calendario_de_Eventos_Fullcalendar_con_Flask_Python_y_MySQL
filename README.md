@@ -1,4 +1,4 @@
-<em> # Su título aquí </em>
+
 
 <em> PASO 1, Crear mi entorno virtual </em>
 virtualenv -p python3 env o python3 -m venv env
@@ -17,17 +17,19 @@ pip install mysql-connector-python
 <h1 align="center"> Crear/Actualizar el fichero requirements.txt:</h1>
 pip freeze > requirements.txt
 
-# IMPORTANTE, para correr el proyecto solo debes ejecutar el archivo
-# requirements.txt con el comando pip install -r requirements.txt en el 
-# mismo se encuentran todas las dependecias del proyecto.
+<em> IMPORTANTE, para correr el proyecto solo debes ejecutar el archivo
+ requirements.txt con el comando pip install -r requirements.txt en el 
+ mismo se encuentran todas las dependecias del proyecto.
+</em>
 
-# Para desactivar nuestro entono virtual (env) $ deactivate   
+<em> Para desactivar nuestro entono virtual (env) $ deactivate  
  
 Comando para actualizar pip: python -m pip install --upgrade pip
+</em> 
 
 
 
-<section style='background-color: #f2f4f9;'>
+<section style="background-color: #f2f4f9;">
  <h2>INSTALACION <hr></h2>
 
 git clone https://github.com/urian121/Crear_Calendario_de_Eventos_Fullcalendar_con_Flask_Python_y_MySQL.git

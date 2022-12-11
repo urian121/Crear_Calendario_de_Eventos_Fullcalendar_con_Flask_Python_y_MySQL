@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Calendario de Eventos Fullcalendar con Flask Python y MySQL</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename = 'imgs/favicon.png') }}">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/fullcalendar.min.css') }}">
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+
+
+</head>
+
+<body>
+
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col msjs">
+
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12 mb-3">
+        <h3 class="text-center" id="title">
+          💥 Crear Calendario de Eventos Fullcalendar con Flask - Python 🐍 y MySQL
+        </h3>
+      </div>
+    </div>
+  </div>
+
+  <div id="calendar"></div>
+  <!--{{ miData }}-->
+  {% include 'public/modalNuevoEvento.html' %}
+  {% include 'public/modalUpdateEvento.html' %}
+
+
+  <script type="text/javascript" src="{{ url_for('static', filename ='js/jquery-3.0.0.min.js') }}"> </script>
+  <script type="text/javascript" src="{{ url_for('static', filename ='js/popper.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename ='js/bootstrap.min.js') }}"></script>
+
+  <script type="text/javascript" src="{{ url_for('static', filename ='js/moment.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename ='js/fullcalendar.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename ='locales/es.js') }}"></script>
+
+  <script type="text/javascript">
+    let data = JSON.parse('{{ miData | tojson }}');
+    //console.log(data)
+
+    var _id = '';
+    var title = '';
+    var start = '';
+    var end = '';
+    var color = '';
+  /*  data.map((evento, i) => {
+      {
+      console.log(`"_id": ${evento.id}`),
+      console.log(`"title": ${evento.evento}`),
+      console.log(`"start": ${evento.fecha_inicio}`),
+      console.log(`"end": ${evento.fecha_fin}`)
+      console.log(`"color": ${evento.color_evento}`)
+      }
+    })*/
+
+
+    $(document).ready(function () {
+      $("#calendar").fullCalendar({
+        header: {
+          left: "prev,next today",
+          center: "title",
+          right: "month,agendaWeek,agendaDay"
+        },
+
+        locale: 'e', //Idioma del calendario Español
+
+        defaultView: "month",
+        navLinks: true,
+        editable: true,
+        eventLimit: true,
+        selectable: true,
+        selectHelper: false,
+
+        //Nuevo Evento
+        select: function (start, end) {
+          $("#exampleModal").modal();
+          $("input[name=fecha_inicio]").val(start.format('YYYY-MM-DD'));
+
+          var valorFechaFin = end.format("YYYY-MM-DD");
+          var F_final = moment(valorFechaFin, "YYYY-MM-DD").subtract(1, 'days').format('YYYY-MM-DD'); //Le resto 1 dia
+          $('input[name=fecha_fin').val(F_final);
+
+        },
+
+
+        events: [ 
+          data.map((evento, i) => {
+            {
+            `
+            "_id": ${evento.id},
+            "title": ${evento.evento},
+            "start": ${evento.fecha_inicio},
+            "end": ${evento.fecha_fin},
+            "color": ${evento.color_evento}
+            `
+            }
+          }),
+
+          /*{
+            "_id" : "2",
+            "title": "Event 2",
+            "start": "2022-12-05",
+            "end": "2022-12-08",
+            "color": "red"
+          },*/
+          {
+            "_id" : "1",
+            "title": "Event 1",
+            "start": "2022-12-10",
+            "end": "2022-12-12",
+            "color": "red"
+          }
+        ],
+
+        /*
+         events: [
+<?php
+ while($dataEvento = mysqli_fetch_array($resulEventos)){ ?>
+    {
+    _id: '<?php echo $dataEvento['id']; ?>',
+    title: '<?php echo $dataEvento['evento']; ?>',
+    start: '<?php echo $dataEvento['fecha_inicio']; ?>',
+    end:   '<?php echo $dataEvento['fecha_fin']; ?>',
+    color: '<?php echo $dataEvento['color_evento']; ?>'
+    },
+  <?php } ?>
+],
+*/
+
+        //Eliminar Evento
+        eventRender: function (event, element) {
+          element
+            .find(".fc-content")
+            .prepend("<span id='btnCerrar'; class='closeon material-icons'>&#xe5cd;</span>");
+
+          //Eliminar evento
+          element.find(".closeon").on("click", function () {
+
+            var pregunta = confirm("Deseas Borrar este Evento?");
+            if (pregunta) {
+
+              $("#calendar").fullCalendar("removeEvents", event._id);
+
+              $.ajax({
+                type: "POST",
+                url: 'deleteEvento.php',
+                data: { id: event._id },
+                success: function (datos) {
+                  $(".alert-danger").show();
+
+                  setTimeout(function () {
+                    $(".alert-danger").slideUp(500);
+                  }, 3000);
+
+                }
+              });
+            }
+          });
+        },
+
+
+        //Moviendo Evento Drag - Drop
+        eventDrop: function (event, delta) {
+          var idEvento = event._id;
+          var start = (event.start.format('YYYY-MM-DD'));
+          var end = (event.end.format("YYYY-MM-DD"));
+
+          $.ajax({
+            url: 'drag_drop_evento.php',
+            data: 'start=' + start + '&end=' + end + '&idEvento=' + idEvento,
+            type: "POST",
+            success: function (response) {
+              // $("#respuesta").html(response);
+            }
+          });
+        },
+
+        //Modificar Evento del Calendario 
+        eventClick: function (event) {
+          var idEvento = event._id;
+          $('input[name=idEvento').val(idEvento);
+          $('input[name=evento').val(event.title);
+          $('input[name=fecha_inicio').val(event.start.format('YYYY-MM-DD'));
+          $('input[name=fecha_fin').val(event.end.format("YYYY-MM-DD"));
+          console.log(event.start.format('YYYY-MM-DD'), event.end.format("YYYY-MM-DD"))
+
+          $("#modalUpdateEvento").modal();
+        },
+
+
+      });
+
+
+      //Oculta mensajes de Notificacion
+      setTimeout(function () {
+        $(".alert").slideUp(300);
+      }, 3000);
+
+
+    });
+
+  </script>
+
+</body>
+</html>

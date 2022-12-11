@@ -30,8 +30,11 @@
 INSTALACION
 
 git clone https://github.com/urian121/Crear_Calendario_de_Eventos_Fullcalendar_con_Flask_Python_y_MySQL.git
+
 cd Crear_Calendario_de_Eventos_Fullcalendar_con_Flask_Python_y_MySQL.git
+
 pip install -r requirements.txt
+
 python app/main.py
 
 

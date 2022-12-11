@@ -27,9 +27,8 @@ Comando para actualizar pip: python -m pip install --upgrade pip
 
 
 
-
-INSTALACION
-- - - - - - -
+<section style='background-color: #f2f4f9;'>
+ <h2>INSTALACION <hr></h2>
 
 git clone https://github.com/urian121/Crear_Calendario_de_Eventos_Fullcalendar_con_Flask_Python_y_MySQL.git
 
@@ -39,4 +38,4 @@ pip install -r requirements.txt
 
 python app/main.py
 
-
+</section>
